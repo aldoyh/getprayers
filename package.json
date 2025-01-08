@@ -37,6 +37,7 @@
 		"@vercel/kv": "^0.2.2",
 		"esbuild": "^0.18.11",
 		"eventsource-parser": "^0.1.0",
+		"gsap": "^3.12.5",
 		"svelte-scrollto": "^0.2.0"
 	}
 }

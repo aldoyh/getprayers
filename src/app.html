@@ -2,13 +2,23 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
+		<title>SvelteKit App</title>
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width" />
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="theme-color" content="#111827" />
+		<meta name="description" content="A modern web application built with SvelteKit" />
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content="SvelteKit App" />
+		<meta property="og:description" content="A modern web application built with SvelteKit" />
+		<meta property="og:image" content="%sveltekit.assets%/background.png" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
 		<!-- Place this tag in your head or just before your close body tag. -->
 		<script async defer src="https://buttons.github.io/buttons.js"></script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover" class="bg-neutral-900 text-slate-100">
-		<div style="display: contents">%sveltekit.body%</div>
+		<div style="display: contents" role="main">%sveltekit.body%</div>
 	</body>
 </html>

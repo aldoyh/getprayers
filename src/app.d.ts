@@ -1,13 +1,39 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {
-    namespace App {
-        // Define specific interfaces if needed
-        // interface Error {}
-        // interface Locals {}
-        // interface PageData {}
-        // interface Platform {}
-    }
+	namespace App {
+		interface Error {
+			message: string;
+			code?: string;
+			stack?: string;
+		}
+		
+		interface Locals {
+			user?: {
+				id: string;
+				name: string;
+				email: string;
+			};
+			sessionId?: string;
+		}
+
+		interface PageData {
+			title?: string;
+			description?: string;
+			metadata?: Record<string, unknown>;
+		}
+
+		interface Platform {
+			env: {
+				KV_NAMESPACE: KVNamespace;
+				DB: D1Database;
+			};
+			context: {
+				waitUntil(promise: Promise<unknown>): void;
+			};
+			caches: CacheStorage & { default: Cache };
+		}
+	}
 }
 
 export {};0

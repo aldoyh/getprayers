@@ -8,10 +8,12 @@
 	import RecommendationCard from '$lib/RecommendationCard.svelte';
 	import { onMount } from 'svelte';
 	import LoadingCard from '$lib/LoadingCard.svelte';
+	import GuestbookModal from '$lib/GuestbookModal.svelte';
 	let loading = false;
 	let error = '';
 	let endStream = false;
 	let makeRecommendation = false;
+	let isGuestbookOpen = false;
 
 	/**
 	 * @type {string}
@@ -118,6 +120,9 @@
 		selectedCategories = [];
 		specificDescriptors = '';
 	}
+	function openGuestbook() {
+		isGuestbookOpen = true;
+	}
 </script>
 
 <div>
@@ -129,7 +134,7 @@
 		/>
 	</div>
 
-	<div class="absolute inset-0 px-6 flex flex-col h-screen overflor-auto">
+	<div class="absolute inset-0 px-6 flex flex-col h-screen overflow-auto">
 		<Header
 			on:click={() => {
 				makeRecommendation = false;
@@ -198,5 +203,6 @@
 			</div>
 		{/if}
 		<Footer />
+		<GuestbookModal bind:isOpen={isGuestbookOpen} />
 	</div>
 </div>
