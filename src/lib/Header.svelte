@@ -27,6 +27,5 @@
 				/></svg
 			></span
 		>
-		<span class="ml-2">Deploy</span>
 	</a>
 </div>
