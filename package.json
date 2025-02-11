@@ -35,7 +35,7 @@
 		"@sveltejs/adapter-vercel": "^4.0.0",
 		"@vercel/analytics": "^0.1.8",
 		"@vercel/kv": "^0.2.2",
-		"esbuild": "^0.18.11",
+		"esbuild": "^0.25.0",
 		"eventsource-parser": "^0.1.0",
 		"gsap": "^3.12.5",
 		"svelte-scrollto": "^0.2.0"
