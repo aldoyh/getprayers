@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Islamic Animated Background */
+.islamic-bg {
+    background: linear-gradient(45deg, #0f172a, #1e293b, #0f172a, #065f46);
+    background-size: 400% 400%;
+    animation: islamicShift 20s ease-in-out infinite;
+}
+
+@keyframes islamicShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 /* Custom utilities */
 @layer utilities {
     .text-balance {

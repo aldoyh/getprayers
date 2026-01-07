@@ -1,0 +1,16 @@
+{
+	"name": "Islamic Prayer App",
+	"short_name": "Prayer App",
+	"description": "A modern Islamic prayer app with prayer times and special Islamic days",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#0f172a",
+	"theme_color": "#1e293b",
+	"icons": [
+		{
+			"src": "/favicon.png",
+			"sizes": "any",
+			"type": "image/png"
+		}
+	]
+}

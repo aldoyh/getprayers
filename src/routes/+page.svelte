@@ -9,6 +9,8 @@
 	import { onMount } from 'svelte';
 	import LoadingCard from '$lib/LoadingCard.svelte';
 	import GuestbookModal from '$lib/GuestbookModal.svelte';
+	import SpecialIslamicDaysWidget from '$lib/SpecialIslamicDaysWidget.svelte';
+	import PrayerTimesWidget from '$lib/PrayerTimesWidget.svelte';
 	let loading = false;
 	let error = '';
 	let endStream = false;
@@ -126,7 +128,7 @@
 </script>
 
 <div>
-	<div class="h-screen w-full bg-cover fixed" style="background-image: url(/background.png)">
+	<div class="h-screen w-full bg-cover fixed islamic-bg">
 		<div
 			class={`${
 				makeRecommendation ? 'backdrop-blur-md' : ''
@@ -151,6 +153,11 @@
 						makeRecommendation = true;
 					}}
 				/>
+				<!-- Islamic Prayer App Section -->
+				<div class="w-full mt-12 space-y-8">
+					<PrayerTimesWidget />
+					<SpecialIslamicDaysWidget />
+				</div>
 			</div>
 		{:else}
 			<div in:fade|global class="w-full max-w-4xl mx-auto">

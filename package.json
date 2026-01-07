@@ -35,9 +35,11 @@
 		"@sveltejs/adapter-vercel": "^4.0.0",
 		"@vercel/analytics": "^0.1.8",
 		"@vercel/kv": "^0.2.2",
+		"cheerio": "^1.1.2",
 		"esbuild": "^0.18.11",
 		"eventsource-parser": "^0.1.0",
 		"gsap": "^3.12.5",
+		"node-fetch": "^3.3.2",
 		"svelte-scrollto": "^0.2.0"
 	}
 }
