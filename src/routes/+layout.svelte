@@ -6,6 +6,6 @@
 	inject({ mode: dev ? 'development' : 'production' });
 </script>
 
-<div class="min-h-screen w-full">
+<div class="min-h-screen w-full" dir="rtl">
 	<slot />
 </div>

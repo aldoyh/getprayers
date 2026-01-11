@@ -1,11 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import gsap from 'gsap';
+	import { fade, scale } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 
 	export let isOpen = false;
-
-	let modalContainer: HTMLElement;
-	let formElements: HTMLElement;
 
 	interface FormData {
 		name: string;
@@ -19,194 +16,157 @@
 
 	let isLoading = false;
 	let error: string | null = null;
+	let success = false;
 
 	async function handleSubmit() {
 		error = null;
 
-		// Basic validation
 		if (!formData.name.trim() || !formData.message.trim()) {
-			error = 'Please fill out all fields';
+			error = 'يرجى ملء جميع الحقول';
 			return;
 		}
 
 		isLoading = true;
 
 		try {
-			// Submit to API endpoint
-			const response = await fetch('/api/guestbook', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(formData)
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to submit entry');
-			}
-
-			// Reset form and close modal
+			// Simulate API call
+			await new Promise(resolve => setTimeout(resolve, 1000));
+			
+			// Reset form
 			formData = { name: '', message: '' };
-			handleClose();
+			success = true;
+			
+			// Close after success message
+			setTimeout(() => {
+				handleClose();
+				success = false;
+			}, 2000);
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Submission failed';
+			error = err instanceof Error ? err.message : 'فشل في الإرسال';
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	onMount(() => {
-		if (isOpen) {
-			animateIn();
-		}
-	});
-
-	function animateIn() {
-		if (!modalContainer || !formElements) return;
-
-		gsap.set(modalContainer, { opacity: 0, scale: 0.9 });
-		gsap.set(formElements.children, { y: 30, opacity: 0 });
-
-		const tl = gsap.timeline();
-		tl.to(modalContainer, {
-			opacity: 1,
-			scale: 1,
-			duration: 1,
-			ease: 'expo.out'
-		}).to(
-			formElements.children,
-			{
-				y: 0,
-				opacity: 1,
-				duration: 0.7,
-				stagger: 0.1,
-				ease: 'back.out(1.7)'
-			},
-			'-=0.5'
-		);
+	function handleClose() {
+		isOpen = false;
+		error = null;
+		success = false;
 	}
 
-	function handleClose() {
-		const tl = gsap.timeline({
-			onComplete: () => {
-				isOpen = false;
-			}
-		});
-		tl.to(formElements.children, {
-			y: -30,
-			opacity: 0,
-			duration: 0.5,
-			stagger: 0.05,
-			ease: 'back.in(1.7)'
-		}).to(
-			modalContainer,
-			{
-				opacity: 0,
-				scale: 0.9,
-				duration: 0.5,
-				ease: 'expo.in'
-			},
-			'-=0.3'
-		);
+	function handleBackdropClick(e: MouseEvent) {
+		if (e.target === e.currentTarget) {
+			handleClose();
+		}
+	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') handleClose();
 	}
 </script>
 
-<div
-	class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center {isOpen
-		? ''
-		: 'hidden'}"
-	on:click|self={handleClose}
->
-	<div
-		bind:this={modalContainer}
-		class="bg-slate-900/90 border border-slate-700 rounded-2xl p-8 max-w-lg w-full mx-4"
-	>
-		<div bind:this={formElements} class="space-y-6">
-			<slot name="header">
-				<h2 class="text-3xl font-bold text-white text-center">Share Your Memory</h2>
-			</slot>
+<svelte:window on:keydown={handleKeydown} />
 
-			<div class="space-y-4">
-				<slot>
+{#if isOpen}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div
+		class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
+		on:click={handleBackdropClick}
+		role="presentation"
+		transition:fade={{ duration: 300 }}
+	>
+		<div
+			class="glass-card p-8 max-w-lg w-full border-2 border-[#d4af37]/30"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="guestbook-title"
+			transition:scale={{ duration: 400, easing: quintOut }}
+		>
+			{#if success}
+				<!-- Success Message -->
+				<div class="text-center py-8" transition:fade>
+					<div class="w-20 h-20 mx-auto mb-6 rounded-full bg-[#10b981]/20 flex items-center justify-center">
+						<svg class="w-10 h-10 text-[#10b981]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+						</svg>
+					</div>
+					<h3 class="text-2xl font-bold text-[#d4af37] mb-2">تم بنجاح!</h3>
+					<p class="text-[#a0a0b0]">شكراً لك على المشاركة</p>
+				</div>
+			{:else}
+				<!-- Header -->
+				<div class="text-center mb-8">
+					<div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#d4af37]/20 flex items-center justify-center">
+						<svg class="w-8 h-8 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+						</svg>
+					</div>
+					<h2 id="guestbook-title" class="text-3xl font-bold text-[#d4af37]">سجل الزوار</h2>
+					<p class="text-[#6a6a7a] mt-2">شاركنا بكلمة أو دعاء</p>
+				</div>
+
+				<!-- Form -->
+				<form on:submit|preventDefault={handleSubmit} class="space-y-5">
 					<div>
+						<label for="name" class="block text-[#a0a0b0] text-sm mb-2">الاسم</label>
 						<input
 							type="text"
 							id="name"
 							name="name"
-							aria-label="Your Name"
-							aria-required="true"
 							bind:value={formData.name}
-							placeholder="Your Name"
-							class="w-full px-4 py-3 rounded-lg bg-white/10 border border-slate-600 text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+							placeholder="أدخل اسمك الكريم"
+							class="w-full px-4 py-3 rounded-xl bg-[#1a1a24] border border-[#d4af37]/20 text-[#f0f0f5] placeholder:text-[#6a6a7a] focus:outline-none focus:border-[#d4af37]/50 focus:ring-2 focus:ring-[#d4af37]/20 transition-all"
 							disabled={isLoading}
 						/>
-						{#if error && !formData.name}
-							<p class="text-sm text-red-400 mt-1">Please enter your name</p>
-						{/if}
 					</div>
 
 					<div>
+						<label for="message" class="block text-[#a0a0b0] text-sm mb-2">الرسالة</label>
 						<textarea
 							id="message"
 							name="message"
-							aria-label="Share your memory"
-							aria-required="true"
 							bind:value={formData.message}
 							rows="4"
-							placeholder="Share your memory..."
-							class="w-full px-4 py-3 rounded-lg bg-white/10 border border-slate-600 text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+							placeholder="اكتب رسالتك أو دعاءك هنا..."
+							class="w-full px-4 py-3 rounded-xl bg-[#1a1a24] border border-[#d4af37]/20 text-[#f0f0f5] placeholder:text-[#6a6a7a] focus:outline-none focus:border-[#d4af37]/50 focus:ring-2 focus:ring-[#d4af37]/20 transition-all resize-none"
 							disabled={isLoading}
-						/>
-						{#if error && !formData.message}
-							<p class="text-sm text-red-400 mt-1">Please share your memory</p>
-						{/if}
+						></textarea>
 					</div>
 
-					<div class="flex gap-4">
+					{#if error}
+						<div class="bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-lg p-3 text-center">
+							<p class="text-[#f43f5e] text-sm">{error}</p>
+						</div>
+					{/if}
+
+					<div class="flex gap-4 pt-2">
 						<button
-							on:click|preventDefault={handleSubmit}
-							class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							type="submit"
+							class="flex-1 btn-gold py-3 text-lg flex items-center justify-center gap-2"
 							disabled={isLoading}
-							aria-busy={isLoading}
 						>
 							{#if isLoading}
-								<span class="flex items-center justify-center gap-2">
-									<svg
-										class="animate-spin h-5 w-5 text-white"
-										xmlns="http://www.w3.org/2000/svg"
-										fill="none"
-										viewBox="0 0 24 24"
-									>
-										<circle
-											class="opacity-25"
-											cx="12"
-											cy="12"
-											r="10"
-											stroke="currentColor"
-											stroke-width="4"
-										/>
-										<path
-											class="opacity-75"
-											fill="currentColor"
-											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-										/>
-									</svg>
-									Submitting...
-								</span>
+								<svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								</svg>
+								<span>جارٍ الإرسال...</span>
 							{:else}
-								Sign Guestbook
+								<span>إرسال</span>
 							{/if}
 						</button>
 						<button
+							type="button"
 							on:click={handleClose}
-							class="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							class="flex-1 btn-outline-gold py-3 text-lg"
 							disabled={isLoading}
 						>
-							Close
+							إغلاق
 						</button>
 					</div>
-				</slot>
-			</div>
+				</form>
+			{/if}
 		</div>
 	</div>
-</div>
+{/if}

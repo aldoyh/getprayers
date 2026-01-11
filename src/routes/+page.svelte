@@ -1,215 +1,73 @@
-<script>
-	import * as animateScroll from 'svelte-scrollto';
-	import { fade } from 'svelte/transition';
-	import Form from '$lib/Form.svelte';
-	import Home from '$lib/Home.svelte';
+<script lang="ts">
+	import { fade, fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+	import { onMount } from 'svelte';
 	import Footer from '$lib/Footer.svelte';
 	import Header from '$lib/Header.svelte';
-	import RecommendationCard from '$lib/RecommendationCard.svelte';
-	import { onMount } from 'svelte';
-	import LoadingCard from '$lib/LoadingCard.svelte';
-	import GuestbookModal from '$lib/GuestbookModal.svelte';
+	import Home from '$lib/Home.svelte';
+	import Preloader from '$lib/Preloader.svelte';
 	import SpecialIslamicDaysWidget from '$lib/SpecialIslamicDaysWidget.svelte';
 	import PrayerTimesWidget from '$lib/PrayerTimesWidget.svelte';
-	let loading = false;
-	let error = '';
-	let endStream = false;
-	let makeRecommendation = false;
+	import GuestbookModal from '$lib/GuestbookModal.svelte';
+
+	let isLoading = true;
 	let isGuestbookOpen = false;
 
-	/**
-	 * @type {string}
-	 */
-	let searchResponse = '';
-	/**
-	 * @type {Array<string | {title: string, description: string}>}
-	 */
-	let recommendations = [];
+	onMount(() => {
+		// Simulate loading time for smooth preloader experience
+		const timer = setTimeout(() => {
+			isLoading = false;
+		}, 2000);
 
-	/**
-	 * @param {string} target
-	 */
+		return () => clearTimeout(timer);
+	});
 
-	$: {
-		if (searchResponse) {
-			let lastLength = recommendations.length;
-			let x = searchResponse?.split('\n');
-			recommendations = x.map((d, i) => {
-				if ((x.length - 1 > i || endStream) && d !== '') {
-					// @ts-ignore
-					const [, title, description] = d.match(/\d\.\s*(.*?):\s*(.*)/);
-					return { title, description };
-				} else {
-					return d;
-				}
-			});
-			if (recommendations.length > lastLength) {
-				animateScroll.scrollToBottom({ duration: 1500 });
-			}
-		}
-	}
-
-	/**
-	 * @type {string}
-	 */
-	let cinemaType = 'tv show';
-	/**
-	 * @type {Array<string>}
-	 */
-	let selectedCategories = [];
-	let specificDescriptors = '';
-
-	async function search() {
-		if (loading) return;
-		recommendations = [];
-		searchResponse = '';
-		endStream = false;
-		loading = true;
-
-		let fullSearchCriteria = `Give me a list of 5 ${cinemaType} recommendations ${
-			selectedCategories ? `that fit all of the following categories: ${selectedCategories}` : ''
-		}. ${
-			specificDescriptors
-				? `Make sure it fits the following description as well: ${specificDescriptors}.`
-				: ''
-		} ${
-			selectedCategories || specificDescriptors
-				? `If you do not have 5 recommendations that fit these criteria perfectly, do your best to suggest other ${cinemaType}'s that I might like.`
-				: ''
-		} Please return this response as a numbered list with the ${cinemaType}'s title, followed by a colon, and then a brief description of the ${cinemaType}. There should be a line of whitespace between each item in the list.`;
-		const response = await fetch('/api/getRecommendation', {
-			method: 'POST',
-			body: JSON.stringify({ searched: fullSearchCriteria }),
-			headers: {
-				'content-type': 'application/json'
-			}
-		});
-
-		if (response.ok) {
-			try {
-				const data = response.body;
-				if (!data) {
-					return;
-				}
-
-				const reader = data.getReader();
-				const decoder = new TextDecoder();
-
-				while (true) {
-					const { value, done } = await reader.read();
-					const chunkValue = decoder.decode(value);
-
-					searchResponse += chunkValue;
-
-					if (done) {
-						endStream = true;
-						break;
-					}
-				}
-			} catch (err) {
-				error = 'Looks like OpenAI timed out :(';
-			}
-		} else {
-			error = await response.text();
-		}
-		loading = false;
-	}
-	function clearForm() {
-		recommendations = [];
-		searchResponse = '';
-		endStream = false;
-		cinemaType = 'tv show';
-		selectedCategories = [];
-		specificDescriptors = '';
-	}
 	function openGuestbook() {
 		isGuestbookOpen = true;
 	}
 </script>
 
-<div>
-	<div class="h-screen w-full bg-cover fixed islamic-bg">
-		<div
-			class={`${
-				makeRecommendation ? 'backdrop-blur-md' : ''
-			}  flex flex-col items-center justify-center min-h-screen w-full h-full bg-gradient-to-br from-slate-900/80 to-black/90`}
-		/>
-	</div>
+<!-- Preloader -->
+<Preloader loading={isLoading} />
 
-	<div class="absolute inset-0 px-6 flex flex-col h-screen overflow-auto">
-		<Header
-			on:click={() => {
-				makeRecommendation = false;
-			}}
-		/>
+<!-- Main Content -->
+{#if !isLoading}
+	<div in:fade={{ duration: 800, delay: 300, easing: quintOut }}>
+		<!-- Background -->
+		<div class="fixed inset-0 islamic-bg">
+			<div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0f]/50 to-[#0a0a0f]"></div>
+		</div>
 
-		{#if !makeRecommendation}
-			<div
-				in:fade|global
-				class="flex-grow max-w-4xl mx-auto w-full md:pt-20  flex flex-col items-center justify-center"
-			>
-				<Home
-					on:click={() => {
-						makeRecommendation = true;
-					}}
-				/>
-				<!-- Islamic Prayer App Section -->
-				<div class="w-full mt-12 space-y-8">
-					<PrayerTimesWidget />
-					<SpecialIslamicDaysWidget />
+		<!-- Main Container -->
+		<div class="relative min-h-screen">
+			<Header on:openGuestbook={openGuestbook} />
+
+			<main class="pt-24 pb-8 px-4 md:px-6 lg:px-8">
+				<div class="max-w-6xl mx-auto space-y-16">
+					<!-- Hero Section -->
+					<section 
+						id="home" 
+						class="min-h-[60vh] flex items-center justify-center py-12"
+					>
+						<Home on:openGuestbook={openGuestbook} />
+					</section>
+
+					<!-- Prayer Times Section -->
+					<section id="prayer-times">
+						<PrayerTimesWidget />
+					</section>
+
+					<!-- Special Islamic Days Section -->
+					<section id="special-days">
+						<SpecialIslamicDaysWidget />
+					</section>
 				</div>
-			</div>
-		{:else}
-			<div in:fade|global class="w-full max-w-4xl mx-auto">
-				<div class="w-full mb-8">
-					<Form
-						bind:cinemaType
-						bind:selectedCategories
-						bind:loading
-						bind:specificDescriptors
-						on:click={search}
-					/>
-					{#if recommendations.length > 0 && endStream}
-						<button
-							on:click={clearForm}
-							class="bg-white/20 hover:bg-white/30 mt-4 w-full h-10 text-white font-bold p-3 rounded-full flex items-center justify-center"
-						>
-							Clear Search
-						</button>
-					{/if}
-				</div>
-				<div class="md:pb-20 max-w-4xl mx-auto w-full">
-					{#if loading && !searchResponse && !recommendations}
-						<div class="fontsemibold text-lg text-center mt-8 mb-4">
-							Please be patient as I think. Good things are coming 😎.
-						</div>
-					{/if}
-					{#if error}
-						<div class="fontsemibold text-lg text-center mt-8 text-red-500">
-							Woops! {error}
-						</div>
-					{/if}
-					{#if recommendations}
-						{#each recommendations as recommendation, i (i)}
-							<div>
-								{#if recommendation !== ''}
-									<div class="mb-8">
-										{#if typeof recommendation !== 'string' && recommendation.title}
-											<RecommendationCard {recommendation} />
-										{:else}
-											<div in:fade|global>
-												<LoadingCard incomingStream={recommendation} />
-											</div>
-										{/if}
-									</div>
-								{/if}
-							</div>
-						{/each}
-					{/if}
-				</div>
-			</div>
-		{/if}
-		<Footer />
+			</main>
+
+			<Footer />
+		</div>
+
+		<!-- Modals -->
 		<GuestbookModal bind:isOpen={isGuestbookOpen} />
 	</div>
-</div>
+{/if}
