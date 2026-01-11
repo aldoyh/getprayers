@@ -95,6 +95,9 @@
 					<span class="text-xl font-bold tracking-tight text-[#d4af37]">الصلاة</span>
 				</div>
 				<span class="text-[0.65rem] uppercase tracking-[0.3em] text-[#6a6a7a]">تطبيق إسلامي</span>
+				<p class="text-[0.6rem] text-[#6a6a7a] mt-1">
+					في ثواب المرحوم الحاج الأستاذ / عيسى بن حسن بن أحمد الدوي
+				</p>
 			</button>
 		</div>
 

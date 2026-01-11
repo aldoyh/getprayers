@@ -52,6 +52,9 @@
                         </svg>
                     </a>
                 </div>
+                <p class="text-[#6a6a7a] text-xs mb-2">
+                    في ثواب المرحوم الحاج الأستاذ / عيسى بن حسن بن أحمد الدوي
+                </p>
                 <p class="text-[#6a6a7a] text-xs">
                     © {new Date().getFullYear()} جميع الحقوق محفوظة
                 </p>
