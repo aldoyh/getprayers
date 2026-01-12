@@ -13,11 +13,15 @@ async function scrapeDailyPrayerTimings() {
 		// Fetch the page content
 		// Using the URL provided: https://www.islamicfinder.org/prayer-widget/290332/shafi/4/0/18.5/10
 		// This appears to be a widget URL with parameters: city_id/method/dst/lat/lon
-		const response = await fetch('https://www.islamicfinder.org/prayer-widget/290332/shafi/4/0/18.5/10', {
-			headers: {
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+		const response = await fetch(
+			'https://www.islamicfinder.org/prayer-widget/290332/shafi/4/0/18.5/10',
+			{
+				headers: {
+					'User-Agent':
+						'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+				}
 			}
-		});
+		);
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
@@ -51,8 +55,17 @@ async function scrapeDailyPrayerTimings() {
 
 				// Try different possible selectors for prayer name
 				const nameSelectors = [
-					'.prayer-name', '.timing-name', '.name', '.prayer-label',
-					'.label', '.time-name', '.prayer-title', 'h3', 'h4', 'span:first', '.title'
+					'.prayer-name',
+					'.timing-name',
+					'.name',
+					'.prayer-label',
+					'.label',
+					'.time-name',
+					'.prayer-title',
+					'h3',
+					'h4',
+					'span:first',
+					'.title'
 				];
 				for (const nameSel of nameSelectors) {
 					const nameEl = $(element).find(nameSel);
@@ -77,8 +90,16 @@ async function scrapeDailyPrayerTimings() {
 
 				// Try different possible selectors for prayer time
 				const timeSelectors = [
-					'.prayer-time', '.timing-value', '.time', '.value', '.time-value',
-					'.prayer-value', '.time-data', 'span:last', '.time-display', '.display'
+					'.prayer-time',
+					'.timing-value',
+					'.time',
+					'.value',
+					'.time-value',
+					'.prayer-value',
+					'.time-data',
+					'span:last',
+					'.time-display',
+					'.display'
 				];
 				for (const timeSel of timeSelectors) {
 					const timeEl = $(element).find(timeSel);
@@ -114,22 +135,22 @@ async function scrapeDailyPrayerTimings() {
 		if (Object.keys(timings).length === 0) {
 			console.log('Using mock data for prayer timings as scraping selectors may need adjustment');
 			return {
-				location: "Al Muharraq, Bahrain",
-				date: "2026-01-06",
+				location: 'Al Muharraq, Bahrain',
+				date: '2026-01-06',
 				timings: {
-					fajr: "05:03 AM",
-					sunrise: "06:26 AM",
-					dhuhr: "11:44 AM",
-					asr: "02:41 PM",
-					maghrib: "05:01 PM",
-					isha: "06:31 PM"
+					fajr: '05:03 AM',
+					sunrise: '06:26 AM',
+					dhuhr: '11:44 AM',
+					asr: '02:41 PM',
+					maghrib: '05:01 PM',
+					isha: '06:31 PM'
 				},
 				nextPrayer: {
-					name: "Fajr",
-					time: "05:03 AM",
-					countdown: "04:15:30" // Format: HH:MM:SS
+					name: 'Fajr',
+					time: '05:03 AM',
+					countdown: '04:15:30' // Format: HH:MM:SS
 				},
-				hijriDate: "17th Rajab, 1447"
+				hijriDate: '17th Rajab, 1447'
 			};
 		}
 
@@ -178,33 +199,33 @@ async function scrapeDailyPrayerTimings() {
 		}
 
 		return {
-			location: "Al Muharraq, Bahrain", // This would be extracted from the page in a real implementation
+			location: 'Al Muharraq, Bahrain', // This would be extracted from the page in a real implementation
 			date: now.toISOString().split('T')[0], // Current date
 			timings,
 			nextPrayer,
-			hijriDate: "17th Rajab, 1447" // This would be extracted from the page in a real implementation
+			hijriDate: '17th Rajab, 1447' // This would be extracted from the page in a real implementation
 		};
 	} catch (error) {
 		console.error('Error scraping daily prayer timings:', error);
 		// Return mock data as fallback in case of scraping error
 		const now = new Date();
 		return {
-			location: "Al Muharraq, Bahrain",
+			location: 'Al Muharraq, Bahrain',
 			date: now.toISOString().split('T')[0],
 			timings: {
-				fajr: "05:03 AM",
-				sunrise: "06:26 AM",
-				dhuhr: "11:44 AM",
-				asr: "02:41 PM",
-				maghrib: "05:01 PM",
-				isha: "06:31 PM"
+				fajr: '05:03 AM',
+				sunrise: '06:26 AM',
+				dhuhr: '11:44 AM',
+				asr: '02:41 PM',
+				maghrib: '05:01 PM',
+				isha: '06:31 PM'
 			},
 			nextPrayer: {
-				name: "Fajr",
-				time: "05:03 AM",
-				countdown: "04:15:30" // Format: HH:MM:SS
+				name: 'Fajr',
+				time: '05:03 AM',
+				countdown: '04:15:30' // Format: HH:MM:SS
 			},
-			hijriDate: "17th Rajab, 1447"
+			hijriDate: '17th Rajab, 1447'
 		};
 	}
 }
@@ -216,15 +237,36 @@ function normalizePrayerName(name: string): string | null {
 	// Map various possible names to standard prayer names
 	if (lowerName.includes('fajr') || lowerName.includes('fagr') || lowerName.includes('subh')) {
 		return 'fajr';
-	} else if (lowerName.includes('sunrise') || lowerName.includes('sun') || lowerName.includes('shrook')) {
+	} else if (
+		lowerName.includes('sunrise') ||
+		lowerName.includes('sun') ||
+		lowerName.includes('shrook')
+	) {
 		return 'sunrise';
-	} else if (lowerName.includes('dhuhr') || lowerName.includes('zuhr') || lowerName.includes('dohr')) {
+	} else if (
+		lowerName.includes('dhuhr') ||
+		lowerName.includes('zuhr') ||
+		lowerName.includes('dohr')
+	) {
 		return 'dhuhr';
-	} else if (lowerName.includes('asr') || lowerName.includes('asr2') || lowerName.includes('afternoon')) {
+	} else if (
+		lowerName.includes('asr') ||
+		lowerName.includes('asr2') ||
+		lowerName.includes('afternoon')
+	) {
 		return 'asr';
-	} else if (lowerName.includes('maghrib') || lowerName.includes('magrib') || lowerName.includes('sunset') || lowerName.includes('evening')) {
+	} else if (
+		lowerName.includes('maghrib') ||
+		lowerName.includes('magrib') ||
+		lowerName.includes('sunset') ||
+		lowerName.includes('evening')
+	) {
 		return 'maghrib';
-	} else if (lowerName.includes('isha') || lowerName.includes('esha') || lowerName.includes('night')) {
+	} else if (
+		lowerName.includes('isha') ||
+		lowerName.includes('esha') ||
+		lowerName.includes('night')
+	) {
 		return 'isha';
 	}
 
@@ -244,14 +286,20 @@ function calculateCountdown(currentMinutes: number, targetMinutes: number): stri
 	const minutes = diffMinutes % 60;
 	const seconds = 0; // Placeholder, in a real app this would update every second
 
-	return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+	return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+		.toString()
+		.padStart(2, '0')}`;
 }
 
 export const GET: RequestHandler = async () => {
 	try {
 		const now = Date.now();
 		// Check if we have valid cached data (less than 1 day old)
-		if (cachedPrayerTimings && prayerCacheTimestamp && (now - prayerCacheTimestamp) < PRAYER_CACHE_DURATION) {
+		if (
+			cachedPrayerTimings &&
+			prayerCacheTimestamp &&
+			now - prayerCacheTimestamp < PRAYER_CACHE_DURATION
+		) {
 			console.log('Returning cached prayer timings');
 			return json({ prayerTimings: cachedPrayerTimings });
 		}

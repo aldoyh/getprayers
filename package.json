@@ -1,5 +1,9 @@
 {
-	"name": "tv-recs-openai",
+	"name": "salati-prayers",
+	"author": {
+		"name": "HASAN ALDOY",
+		"email": "aldoyh@gmail.com"
+	},
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -32,14 +36,14 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@sveltejs/adapter-vercel": "^4.0.0",
-		"@vercel/analytics": "^0.1.8",
+		"@sveltejs/adapter-vercel": "^6.3.0",
+		"@vercel/analytics": "^1.6.1",
 		"@vercel/blob": "^2.0.0",
-		"@vercel/kv": "^0.2.2",
+		"@vercel/kv": "^3.0.0",
 		"cheerio": "^1.1.2",
-		"esbuild": "^0.18.11",
-		"eventsource-parser": "^0.1.0",
-		"gsap": "^3.12.5",
+		"esbuild": "^0.27.2",
+		"eventsource-parser": "^3.0.6",
+		"gsap": "^3.14.2",
 		"node-fetch": "^3.3.2",
 		"svelte-scrollto": "^0.2.0"
 	}

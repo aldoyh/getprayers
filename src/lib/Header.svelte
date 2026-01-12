@@ -34,7 +34,9 @@
 </script>
 
 <header class="fixed inset-x-0 top-0 z-50" aria-label="Primary">
-	<div class="backdrop-blur-xl border-b border-[#d4af37]/20 bg-[#0a0a0f]/90 shadow-lg shadow-black/20">
+	<div
+		class="backdrop-blur-xl border-b border-[#d4af37]/20 bg-[#0a0a0f]/90 shadow-lg shadow-black/20"
+	>
 		<div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:py-5">
 			<!-- Mobile Menu Button (Right side in RTL) -->
 			<button
@@ -56,29 +58,23 @@
 						on:click={handleNavClick}
 					>
 						{link.label}
-						<span class="absolute bottom-0 right-0 w-0 h-0.5 bg-[#d4af37] transition-all duration-300 group-hover:w-full"></span>
+						<span
+							class="absolute bottom-0 right-0 w-0 h-0.5 bg-[#d4af37] transition-all duration-300 group-hover:w-full"
+						/>
 					</a>
 				{/each}
 			</nav>
 
 			<!-- Desktop Buttons -->
 			<div class="hidden gap-3 md:flex">
-				<button
-					class="btn-outline-gold text-sm"
-					on:click={startRecommendation}
-				>
+				<button class="btn-outline-gold text-sm" on:click={startRecommendation}>
 					{#if isRecommendationMode}
 						العودة للرئيسية
 					{:else}
 						خطة اليوم
 					{/if}
 				</button>
-				<button
-					class="btn-gold text-sm"
-					on:click={openGuestbook}
-				>
-					سجل الزوار
-				</button>
+				<button class="btn-gold text-sm" on:click={openGuestbook}> سجل الزوار </button>
 			</div>
 
 			<!-- Logo (Left side in RTL) -->
@@ -90,7 +86,9 @@
 				<div class="flex items-center gap-2">
 					<!-- Crescent Moon Icon -->
 					<svg class="w-7 h-7 text-[#d4af37]" viewBox="0 0 24 24" fill="currentColor">
-						<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"/>
+						<path
+							d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"
+						/>
 					</svg>
 					<span class="text-xl font-bold tracking-tight text-[#d4af37]">الصلاة</span>
 				</div>
@@ -103,7 +101,7 @@
 
 		<!-- Mobile Menu -->
 		{#if mobileOpen}
-			<div 
+			<div
 				class="border-t border-[#d4af37]/20 px-6 pb-6 pt-4 space-y-4"
 				transition:slide={{ duration: 300 }}
 			>
@@ -119,22 +117,14 @@
 					{/each}
 				</nav>
 				<div class="flex flex-col gap-3 pt-4 border-t border-[#d4af37]/10">
-					<button
-						class="btn-outline-gold w-full py-3"
-						on:click={startRecommendation}
-					>
+					<button class="btn-outline-gold w-full py-3" on:click={startRecommendation}>
 						{#if isRecommendationMode}
 							العودة للرئيسية
 						{:else}
 							خطة اليوم
 						{/if}
 					</button>
-					<button
-						class="btn-gold w-full py-3"
-						on:click={openGuestbook}
-					>
-						سجل الزوار
-					</button>
+					<button class="btn-gold w-full py-3" on:click={openGuestbook}> سجل الزوار </button>
 				</div>
 			</div>
 		{/if}

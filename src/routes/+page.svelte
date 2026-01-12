@@ -35,7 +35,9 @@
 	<div in:fade={{ duration: 800, delay: 300, easing: quintOut }}>
 		<!-- Background -->
 		<div class="fixed inset-0 islamic-bg">
-			<div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0f]/50 to-[#0a0a0f]"></div>
+			<div
+				class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0f]/50 to-[#0a0a0f]"
+			/>
 		</div>
 
 		<!-- Main Container -->
@@ -45,10 +47,7 @@
 			<main class="pt-24 pb-8 px-4 md:px-6 lg:px-8">
 				<div class="max-w-6xl mx-auto space-y-16">
 					<!-- Hero Section -->
-					<section 
-						id="home" 
-						class="min-h-[60vh] flex items-center justify-center py-12"
-					>
+					<section id="home" class="min-h-[60vh] flex items-center justify-center py-12">
 						<Home on:openGuestbook={openGuestbook} />
 					</section>
 

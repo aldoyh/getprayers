@@ -7,7 +7,7 @@
 
 <div class="relative flex flex-col md:flex-row bg-neutral-800/70 shadow-md p-6">
 	<div
-		class="bg-gradient-to-br from-neutral-900 via-neutral-700 to-neutral-900 background-animate text-white/50 flex items-center justify-center h-[250px] flex-none w-1/5 "
+		class="bg-gradient-to-br from-neutral-900 via-neutral-700 to-neutral-900 background-animate text-white/50 flex items-center justify-center h-[250px] flex-none w-1/5"
 	>
 		<svg width="35" height="35" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path

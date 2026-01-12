@@ -3,7 +3,13 @@ import type { RequestHandler } from './$types';
 import * as cheerio from 'cheerio';
 
 // Cache for special Islamic days
-let cachedSpecialDays: Array<{id: number, name: string, date: string, description: string, type: string}> | null = null;
+let cachedSpecialDays: Array<{
+	id: number;
+	name: string;
+	date: string;
+	description: string;
+	type: string;
+}> | null = null;
 let cacheTimestamp: number | null = null;
 const CACHE_DURATION = 365 * 24 * 60 * 60 * 1000; // 1 year in milliseconds
 
@@ -13,7 +19,8 @@ async function scrapeSpecialIslamicDays() {
 		// Fetch the page content
 		const response = await fetch('https://www.islamicfinder.org/specialislamicdays', {
 			headers: {
-				'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+				'User-Agent':
+					'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 			}
 		});
 
@@ -25,7 +32,13 @@ async function scrapeSpecialIslamicDays() {
 		const $ = cheerio.load(html);
 
 		// Extract special Islamic days
-		const specialDays: Array<{id: number, name: string, date: string, description: string, type: string}> = [];
+		const specialDays: Array<{
+			id: number;
+			name: string;
+			date: string;
+			description: string;
+			type: string;
+		}> = [];
 
 		// Looking for common patterns in HTML that might contain Islamic special days
 		// This includes various possible selectors for different page structures
@@ -56,7 +69,16 @@ async function scrapeSpecialIslamicDays() {
 				let type = '';
 
 				// Try different possible selectors for name
-				const nameSelectors = ['.event-title', '.day-name', '.title', 'h3', 'h4', '.name', '.event-name', 'h2'];
+				const nameSelectors = [
+					'.event-title',
+					'.day-name',
+					'.title',
+					'h3',
+					'h4',
+					'.name',
+					'.event-name',
+					'h2'
+				];
 				for (const nameSel of nameSelectors) {
 					const nameEl = $(element).find(nameSel);
 					if (nameEl.length > 0) {
@@ -81,7 +103,14 @@ async function scrapeSpecialIslamicDays() {
 				}
 
 				// Try different possible selectors for description
-				const descSelectors = ['.event-description', '.day-description', '.desc', '.description', 'p', '.details'];
+				const descSelectors = [
+					'.event-description',
+					'.day-description',
+					'.desc',
+					'.description',
+					'p',
+					'.details'
+				];
 				for (const descSel of descSelectors) {
 					const descEl = $(element).find(descSel);
 					if (descEl.length > 0) {
@@ -103,11 +132,27 @@ async function scrapeSpecialIslamicDays() {
 				// Filter out non-Islamic events and clean up the data
 				const lowerName = name.toLowerCase();
 				const isIslamicEvent = [
-					'eid', 'ramadan', 'mawlid', 'hajj', 'lailat', 'qadr',
-					'islamic', 'hijrah', 'muharram', 'ashura', 'rajab',
-					'shaban', 'shawwal', 'dhu al-hijjah', 'allah', 'prophet',
-					'muhammad', 'nabi', 'hijri', 'hijra'
-				].some(term => lowerName.includes(term));
+					'eid',
+					'ramadan',
+					'mawlid',
+					'hajj',
+					'lailat',
+					'qadr',
+					'islamic',
+					'hijrah',
+					'muharram',
+					'ashura',
+					'rajab',
+					'shaban',
+					'shawwal',
+					'dhu al-hijjah',
+					'allah',
+					'prophet',
+					'muhammad',
+					'nabi',
+					'hijri',
+					'hijra'
+				].some((term) => lowerName.includes(term));
 
 				if (name && isIslamicEvent) {
 					// Clean up the date format if needed
@@ -124,7 +169,10 @@ async function scrapeSpecialIslamicDays() {
 						const lowerName = name.toLowerCase();
 						if (lowerName.includes('ramadan')) {
 							date = '2026-03-01';
-						} else if (lowerName.includes('laylat al-qadr') || lowerName.includes('lailat al-qadr')) {
+						} else if (
+							lowerName.includes('laylat al-qadr') ||
+							lowerName.includes('lailat al-qadr')
+						) {
 							date = '2026-03-27';
 						} else if (lowerName.includes('eid ul fitr') || lowerName.includes('eid al-fitr')) {
 							date = '2026-03-31';
@@ -156,56 +204,58 @@ async function scrapeSpecialIslamicDays() {
 
 		// If no items were found with our selectors, return mock data as fallback
 		if (specialDays.length === 0) {
-			console.log('Using improved mock data for special Islamic days based on IslamicFinder output');
+			console.log(
+				'Using improved mock data for special Islamic days based on IslamicFinder output'
+			);
 			return [
 				{
 					id: 1,
-					name: "Ramadan",
-					date: "2026-03-01",
-					description: "The holy month of fasting and spiritual reflection",
-					type: "Ramadan"
+					name: 'Ramadan',
+					date: '2026-03-01',
+					description: 'The holy month of fasting and spiritual reflection',
+					type: 'Ramadan'
 				},
 				{
 					id: 2,
-					name: "Laylat al-Qadr",
-					date: "2026-03-27",
-					description: "Night of Power - the holiest night in Islam",
-					type: "Spiritual Night"
+					name: 'Laylat al-Qadr',
+					date: '2026-03-27',
+					description: 'Night of Power - the holiest night in Islam',
+					type: 'Spiritual Night'
 				},
 				{
 					id: 3,
-					name: "Eid ul Fitr",
-					date: "2026-03-31",
-					description: "Festival marking the end of Ramadan",
-					type: "Eid"
+					name: 'Eid ul Fitr',
+					date: '2026-03-31',
+					description: 'Festival marking the end of Ramadan',
+					type: 'Eid'
 				},
 				{
 					id: 4,
-					name: "Hajj",
-					date: "2026-05-25",
-					description: "The pilgrimage to Makkah",
-					type: "Pilgrimage"
+					name: 'Hajj',
+					date: '2026-05-25',
+					description: 'The pilgrimage to Makkah',
+					type: 'Pilgrimage'
 				},
 				{
 					id: 5,
-					name: "Eid ul Adha",
-					date: "2026-05-27",
-					description: "Festival of Sacrifice",
-					type: "Eid"
+					name: 'Eid ul Adha',
+					date: '2026-05-27',
+					description: 'Festival of Sacrifice',
+					type: 'Eid'
 				},
 				{
 					id: 6,
-					name: "Muharram",
-					date: "2026-06-16",
-					description: "Islamic New Year 1448 AH",
-					type: "New Year"
+					name: 'Muharram',
+					date: '2026-06-16',
+					description: 'Islamic New Year 1448 AH',
+					type: 'New Year'
 				},
 				{
 					id: 7,
-					name: "Ashura",
-					date: "2026-06-25",
-					description: "Day of mourning for Imam Hussein",
-					type: "Islamic Event"
+					name: 'Ashura',
+					date: '2026-06-25',
+					description: 'Day of mourning for Imam Hussein',
+					type: 'Islamic Event'
 				}
 			];
 		}
@@ -217,52 +267,52 @@ async function scrapeSpecialIslamicDays() {
 		return [
 			{
 				id: 1,
-				name: "Ramadan",
-				date: "2026-03-01",
-				description: "The holy month of fasting and spiritual reflection",
-				type: "Ramadan"
+				name: 'Ramadan',
+				date: '2026-03-01',
+				description: 'The holy month of fasting and spiritual reflection',
+				type: 'Ramadan'
 			},
 			{
 				id: 2,
-				name: "Laylat al-Qadr",
-				date: "2026-03-27",
-				description: "Night of Power - the holiest night in Islam",
-				type: "Spiritual Night"
+				name: 'Laylat al-Qadr',
+				date: '2026-03-27',
+				description: 'Night of Power - the holiest night in Islam',
+				type: 'Spiritual Night'
 			},
 			{
 				id: 3,
-				name: "Eid ul Fitr",
-				date: "2026-03-31",
-				description: "Festival marking the end of Ramadan",
-				type: "Eid"
+				name: 'Eid ul Fitr',
+				date: '2026-03-31',
+				description: 'Festival marking the end of Ramadan',
+				type: 'Eid'
 			},
 			{
 				id: 4,
-				name: "Hajj",
-				date: "2026-05-25",
-				description: "The pilgrimage to Makkah",
-				type: "Pilgrimage"
+				name: 'Hajj',
+				date: '2026-05-25',
+				description: 'The pilgrimage to Makkah',
+				type: 'Pilgrimage'
 			},
 			{
 				id: 5,
-				name: "Eid ul Adha",
-				date: "2026-05-27",
-				description: "Festival of Sacrifice",
-				type: "Eid"
+				name: 'Eid ul Adha',
+				date: '2026-05-27',
+				description: 'Festival of Sacrifice',
+				type: 'Eid'
 			},
 			{
 				id: 6,
-				name: "Muharram",
-				date: "2026-06-16",
-				description: "Islamic New Year 1448 AH",
-				type: "New Year"
+				name: 'Muharram',
+				date: '2026-06-16',
+				description: 'Islamic New Year 1448 AH',
+				type: 'New Year'
 			},
 			{
 				id: 7,
-				name: "Ashura",
-				date: "2026-06-25",
-				description: "Day of mourning for Imam Hussein",
-				type: "Islamic Event"
+				name: 'Ashura',
+				date: '2026-06-25',
+				description: 'Day of mourning for Imam Hussein',
+				type: 'Islamic Event'
 			}
 		];
 	}
@@ -272,7 +322,7 @@ export const GET: RequestHandler = async () => {
 	try {
 		const now = Date.now();
 		// Check if we have valid cached data (less than 1 year old)
-		if (cachedSpecialDays && cacheTimestamp && (now - cacheTimestamp) < CACHE_DURATION) {
+		if (cachedSpecialDays && cacheTimestamp && now - cacheTimestamp < CACHE_DURATION) {
 			console.log('Returning cached special Islamic days');
 			return json({ specialDays: cachedSpecialDays });
 		}

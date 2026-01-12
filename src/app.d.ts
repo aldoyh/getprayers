@@ -7,7 +7,7 @@ declare global {
 			code?: string;
 			stack?: string;
 		}
-		
+
 		interface Locals {
 			user?: {
 				id: string;
@@ -36,4 +36,5 @@ declare global {
 	}
 }
 
-export {};0
+export {};
+0;
