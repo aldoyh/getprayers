@@ -209,7 +209,7 @@
 					<p class="text-[#f0f0f5] text-xl mb-6">{formatTimeAr(nextPrayer.time)}</p>
 
 					<!-- Countdown Timer -->
-					<div class="flex justify-center items-center gap-4">
+					<div class="flex justify-center items-center gap-4" dir="ltr">
 						<div class="flex flex-col items-center">
 							<span class="text-5xl font-bold text-[#d4af37] countdown-display">
 								{String(countdown.hours).padStart(2, '0')}

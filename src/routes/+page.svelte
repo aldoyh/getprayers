@@ -9,6 +9,7 @@
 	import SpecialIslamicDaysWidget from '$lib/SpecialIslamicDaysWidget.svelte';
 	import PrayerTimesWidget from '$lib/PrayerTimesWidget.svelte';
 	import GuestbookModal from '$lib/GuestbookModal.svelte';
+	import QuranVerseOfTheDay from '$lib/QuranVerseOfTheDay.svelte';
 
 	let isLoading = true;
 	let isGuestbookOpen = false;
@@ -54,6 +55,11 @@
 					<!-- Prayer Times Section -->
 					<section id="prayer-times">
 						<PrayerTimesWidget />
+					</section>
+
+					<!-- Quran Verse of the Day Section -->
+					<section id="quran-verse">
+						<QuranVerseOfTheDay />
 					</section>
 
 					<!-- Special Islamic Days Section -->

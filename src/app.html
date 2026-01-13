@@ -1,65 +1,52 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-	<head>
-		<meta charset="utf-8" />
-		<title>تطبيق الصلاة الإسلامي</title>
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-		<meta
-			name="description"
-			content="تطبيق إسلامي شامل لمواقيت الصلاة والأيام الإسلامية المباركة"
-		/>
-		<meta name="theme-color" content="#0d0d14" />
-		<meta name="mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-title" content="الصلاة" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://salati.vercel.app/" />
-		<meta property="og:title" content="تطبيق الصلاة الإسلامي" />
-		<meta
-			property="og:description"
-			content="تطبيق إسلامي شامل لمواقيت الصلاة والأيام الإسلامية المباركة"
-		/>
-		<meta property="og:image" content="%sveltekit.assets%/background.png" />
-		<meta property="og:image:alt" content="تطبيق الصلاة الإسلامي" />
+<head>
+	<meta charset="utf-8" />
+	<title>تطبيق الصلاة الإسلامي</title>
+	<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+	<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+	<meta name="description" content="تطبيق إسلامي شامل لمواقيت الصلاة والأيام الإسلامية المباركة" />
+	<meta name="theme-color" content="#0d0d14" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-title" content="الصلاة" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-		<!-- Twitter -->
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content="تطبيق الصلاة الإسلامي" />
-		<meta
-			name="twitter:description"
-			content="تطبيق إسلامي شامل لمواقيت الصلاة والأيام الإسلامية المباركة"
-		/>
-		<meta name="twitter:image" content="%sveltekit.assets%/background.png" />
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://salati.vercel.app/" />
+	<meta property="og:title" content="تطبيق الصلاة الإسلامي" />
+	<meta property="og:description" content="تطبيق إسلامي شامل لمواقيت الصلاة والأيام الإسلامية المباركة" />
+	<meta property="og:image" content="%sveltekit.assets%/background.png" />
+	<meta property="og:image:alt" content="تطبيق الصلاة الإسلامي" />
 
-		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="تطبيق الصلاة الإسلامي" />
+	<meta name="twitter:description" content="تطبيق إسلامي شامل لمواقيت الصلاة والأيام الإسلامية المباركة" />
+	<meta name="twitter:image" content="%sveltekit.assets%/background.png" />
 
-		<!-- Preload critical font -->
-		<link
-			rel="preload"
-			href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
-			as="style"
-			onload="this.onload=null;this.rel='stylesheet'"
-		/>
-		<noscript
-			><link
-				rel="stylesheet"
-				href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
-		/></noscript>
+	<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
 
-		<!-- Preconnect to external domains -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<!-- Preload critical fonts -->
+	<link rel="preload"
+		href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&family=Amiri+Quran&family=Scheherazade+New:wght@400;500;600;700&display=swap"
+		as="style" onload="this.onload=null;this.rel='stylesheet'" />
+	<noscript>
+		<link rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&family=Amiri+Quran&family=Scheherazade+New:wght@400;500;600;700&display=swap" />
+	</noscript>
 
-		%sveltekit.head%
-	</head>
-	<body
-		data-sveltekit-preload-data="hover"
-		class="bg-[#0d0d14] text-slate-100 min-h-screen antialiased"
-	>
-		<div style="display: contents" role="main">%sveltekit.body%</div>
-	</body>
+	<!-- Preconnect to external domains -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+	%sveltekit.head%
+</head>
+
+<body data-sveltekit-preload-data="hover" class="bg-[#0d0d14] text-slate-100 min-h-screen antialiased">
+	<div style="display: contents" role="main">%sveltekit.body%</div>
+</body>
+
 </html>

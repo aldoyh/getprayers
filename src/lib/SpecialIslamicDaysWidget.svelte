@@ -210,7 +210,7 @@
 						</div>
 
 						<!-- Days Counter Display -->
-						<div class="text-center">
+						<div class="text-center" dir="ltr">
 							<div class="relative">
 								<div
 									class="w-32 h-32 rounded-full border-4 border-[#d4af37] flex items-center justify-center bg-[#d4af37]/10"
