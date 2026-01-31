@@ -1,170 +1,176 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import * as cheerio from 'cheerio';
 
 // Cache for prayer timings
 let cachedPrayerTimings: any = null;
 let prayerCacheTimestamp: number | null = null;
-const PRAYER_CACHE_DURATION = 24 * 60 * 60 * 1000; // 1 day in milliseconds (since prayer times change daily)
+const PRAYER_CACHE_DURATION = 1 * 60 * 60 * 1000; // 1 hour in milliseconds (refresh hourly for accuracy)
 
-// Function to scrape daily prayer timings from IslamicFinder
-async function scrapeDailyPrayerTimings() {
+// Location constants for Al Muharraq, Bahrain
+const LOCATION = {
+	city: 'Al Muharraq',
+	country: 'Bahrain',
+	latitude: 26.2572,
+	longitude: 50.6089,
+	method: 2, // Islamic Society of North America (ISNA) - You can change this
+	// Available methods:
+	// 1 = University of Islamic Sciences, Karachi
+	// 2 = Islamic Society of North America (ISNA)
+	// 3 = Muslim World League (MWL)
+	// 4 = Umm al-Qura, Makkah
+	// 5 = Egyptian General Authority of Survey
+	// 7 = Institute of Geophysics, University of Tehran
+	// 8 = Gulf Region
+	// 9 = Kuwait
+	// 10 = Qatar
+	// 11 = Majlis Ugama Islam Singapura, Singapore
+	// 12 = Union Organization islamic de France
+	// 13 = Diyanet İşleri Başkanlığı, Turkey
+	// 14 = Spiritual Administration of Muslims of Russia
+	school: 1 // 0 = Shafi, 1 = Hanafi (for Asr calculation)
+};
+
+// Hijri months in Arabic
+const HIJRI_MONTHS = [
+	'محرم',
+	'صفر',
+	'ربيع الأول',
+	'ربيع الآخر',
+	'جمادى الأولى',
+	'جمادى الآخرة',
+	'رجب',
+	'شعبان',
+	'رمضان',
+	'شوال',
+	'ذو القعدة',
+	'ذو الحجة'
+];
+
+interface AladhanTimings {
+	Fajr: string;
+	Sunrise: string;
+	Dhuhr: string;
+	Asr: string;
+	Maghrib: string;
+	Isha: string;
+	Sunset: string;
+	[key: string]: string;
+}
+
+interface AladhanDate {
+	hijri: {
+		day: string;
+		month: {
+			number: number;
+			en: string;
+			ar: string;
+		};
+		year: string;
+		designation: {
+			abbreviated: string;
+			expanded: string;
+		};
+	};
+	gregorian: {
+		date: string;
+		day: string;
+		month: {
+			number: number;
+			en: string;
+		};
+		year: string;
+	};
+}
+
+interface AladhanResponse {
+	code: number;
+	status: string;
+	data: {
+		timings: AladhanTimings;
+		date: AladhanDate;
+		meta: {
+			latitude: number;
+			longitude: number;
+			timezone: string;
+			method: {
+				id: number;
+				name: string;
+			};
+			school: {
+				name: string;
+			};
+		};
+	};
+}
+
+// Function to fetch prayer timings from Aladhan API
+async function fetchPrayerTimings() {
 	try {
-		// Fetch the page content
-		// Using the URL provided: https://www.islamicfinder.org/prayer-widget/290332/shafi/4/0/18.5/10
-		// This appears to be a widget URL with parameters: city_id/method/dst/lat/lon
-		const response = await fetch(
-			'https://www.islamicfinder.org/prayer-widget/290332/shafi/4/0/18.5/10',
-			{
-				headers: {
-					'User-Agent':
-						'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-				}
+		// Get current date
+		const now = new Date();
+		const timestamp = Math.floor(now.getTime() / 1000);
+
+		// Construct API URL with all parameters
+		const apiUrl = `https://api.aladhan.com/v1/timings/${timestamp}?latitude=${LOCATION.latitude}&longitude=${LOCATION.longitude}&method=${LOCATION.method}&school=${LOCATION.school}`;
+
+		console.log('Fetching prayer times from Aladhan API:', apiUrl);
+
+		const response = await fetch(apiUrl, {
+			headers: {
+				'Accept': 'application/json'
 			}
-		);
+		});
 
 		if (!response.ok) {
 			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 
-		const html = await response.text();
-		const $ = cheerio.load(html);
+		const data: AladhanResponse = await response.json();
 
-		// Extract prayer times
-		const timings: Record<string, string> = {};
-
-		// Looking for common patterns in HTML that might contain prayer times
-		// This includes various possible selectors for different page structures
-		const possibleSelectors = [
-			'.prayer-time',
-			'.timing',
-			'.prayer-item',
-			'.salah-time',
-			'.prayer-row',
-			'[data-prayer-time]',
-			'.time-item',
-			'.prayer-container'
-		];
-
-		// Try different selectors to find the data
-		for (const selector of possibleSelectors) {
-			$(selector).each((index, element) => {
-				// Try to extract prayer name and time using various possible sub-selectors
-				let prayerName = '';
-				let prayerTime = '';
-
-				// Try different possible selectors for prayer name
-				const nameSelectors = [
-					'.prayer-name',
-					'.timing-name',
-					'.name',
-					'.prayer-label',
-					'.label',
-					'.time-name',
-					'.prayer-title',
-					'h3',
-					'h4',
-					'span:first',
-					'.title'
-				];
-				for (const nameSel of nameSelectors) {
-					const nameEl = $(element).find(nameSel);
-					if (nameEl.length > 0) {
-						prayerName = nameEl.text().trim();
-						if (prayerName) break;
-					}
-				}
-
-				// If no name found in sub-elements, try to extract from text content
-				if (!prayerName) {
-					const text = $(element).text().trim();
-					// Try to extract prayer name from text (common prayer names)
-					const prayerNames = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha', 'sunset'];
-					for (const name of prayerNames) {
-						if (text.toLowerCase().includes(name)) {
-							prayerName = name;
-							break;
-						}
-					}
-				}
-
-				// Try different possible selectors for prayer time
-				const timeSelectors = [
-					'.prayer-time',
-					'.timing-value',
-					'.time',
-					'.value',
-					'.time-value',
-					'.prayer-value',
-					'.time-data',
-					'span:last',
-					'.time-display',
-					'.display'
-				];
-				for (const timeSel of timeSelectors) {
-					const timeEl = $(element).find(timeSel);
-					if (timeEl.length > 0) {
-						prayerTime = timeEl.text().trim();
-						if (prayerTime) break;
-					}
-				}
-
-				// If no time found in sub-elements, try to extract time pattern from text
-				if (!prayerTime) {
-					const text = $(element).text().trim();
-					// Match time pattern (HH:MM AM/PM or HH:MM)
-					const timeMatch = text.match(/\b\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?\b/);
-					if (timeMatch) {
-						prayerTime = timeMatch[0].trim();
-					}
-				}
-
-				// Normalize prayer name to standard names
-				if (prayerName && prayerTime) {
-					const normalizedPrayerName = normalizePrayerName(prayerName);
-					if (normalizedPrayerName) {
-						timings[normalizedPrayerName] = prayerTime;
-					}
-				}
-			});
-
-			if (Object.keys(timings).length >= 5) break; // If we found most prayer times, no need to try other selectors
+		if (data.code !== 200 || !data.data) {
+			throw new Error('Invalid response from Aladhan API');
 		}
 
-		// If no times were found with our selectors, use mock data as fallback
-		if (Object.keys(timings).length === 0) {
-			console.log('Using mock data for prayer timings as scraping selectors may need adjustment');
-			return {
-				location: 'Al Muharraq, Bahrain',
-				date: '2026-01-06',
-				timings: {
-					fajr: '05:03 AM',
-					sunrise: '06:26 AM',
-					dhuhr: '11:44 AM',
-					asr: '02:41 PM',
-					maghrib: '05:01 PM',
-					isha: '06:31 PM'
-				},
-				nextPrayer: {
-					name: 'Fajr',
-					time: '05:03 AM',
-					countdown: '04:15:30' // Format: HH:MM:SS
-				},
-				hijriDate: '17th Rajab, 1447'
-			};
-		}
+		// Extract timings and convert to 12-hour format
+		const timings = data.data.timings;
+		const date = data.data.date;
 
-		// Calculate next prayer (simplified logic)
-		const now = new Date();
+		// Convert 24-hour time to 12-hour format with AM/PM
+		const convertTo12Hour = (time24: string): string => {
+			// Remove any timezone info (e.g., "(+03)" at the end)
+			const cleanTime = time24.split(' ')[0];
+			const [hours, minutes] = cleanTime.split(':').map(Number);
+
+			const period = hours >= 12 ? 'PM' : 'AM';
+			const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+
+			return `${hours12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+		};
+
+		// Format prayer times
+		const formattedTimings: Record<string, string> = {
+			fajr: convertTo12Hour(timings.Fajr),
+			sunrise: convertTo12Hour(timings.Sunrise),
+			dhuhr: convertTo12Hour(timings.Dhuhr),
+			asr: convertTo12Hour(timings.Asr),
+			maghrib: convertTo12Hour(timings.Maghrib),
+			isha: convertTo12Hour(timings.Isha)
+		};
+
+		// Format Hijri date
+		const hijriDay = date.hijri.day;
+		const hijriMonth = HIJRI_MONTHS[date.hijri.month.number - 1];
+		const hijriYear = date.hijri.year;
+		const hijriDate = `${hijriDay} ${hijriMonth} ${hijriYear}هـ`;
+
+		// Calculate next prayer
 		const currentTime = now.getHours() * 60 + now.getMinutes();
-
-		// Define prayer order for calculation
 		const prayerOrder = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 		let nextPrayer = null;
 		for (const prayer of prayerOrder) {
-			if (timings[prayer]) {
-				const [time, modifier] = timings[prayer].split(' ');
+			if (formattedTimings[prayer]) {
+				const [time, modifier] = formattedTimings[prayer].split(' ');
 				let [hours, minutes] = time.split(':').map(Number);
 
 				if (modifier && modifier.toLowerCase() === 'pm' && hours !== 12) {
@@ -178,7 +184,7 @@ async function scrapeDailyPrayerTimings() {
 				if (prayerMinutes > currentTime) {
 					nextPrayer = {
 						name: prayer.charAt(0).toUpperCase() + prayer.slice(1),
-						time: timings[prayer],
+						time: formattedTimings[prayer],
 						countdown: calculateCountdown(currentTime, prayerMinutes)
 					};
 					break;
@@ -189,88 +195,33 @@ async function scrapeDailyPrayerTimings() {
 		// If no next prayer found (meaning current time is past all prayers), use first prayer of next day
 		if (!nextPrayer) {
 			const firstPrayer = prayerOrder[0];
-			if (timings[firstPrayer]) {
+			if (formattedTimings[firstPrayer]) {
 				nextPrayer = {
 					name: firstPrayer.charAt(0).toUpperCase() + firstPrayer.slice(1),
-					time: timings[firstPrayer],
+					time: formattedTimings[firstPrayer],
 					countdown: calculateCountdown(currentTime, 24 * 60) // Add 24 hours
 				};
 			}
 		}
 
 		return {
-			location: 'Al Muharraq, Bahrain', // This would be extracted from the page in a real implementation
-			date: now.toISOString().split('T')[0], // Current date
-			timings,
+			location: `${LOCATION.city}, ${LOCATION.country}`,
+			date: date.gregorian.date,
+			timings: formattedTimings,
 			nextPrayer,
-			hijriDate: '17th Rajab, 1447' // This would be extracted from the page in a real implementation
+			hijriDate,
+			meta: {
+				timezone: data.data.meta.timezone,
+				method: data.data.meta.method.name,
+				school: data.data.meta.school.name,
+				latitude: LOCATION.latitude,
+				longitude: LOCATION.longitude
+			}
 		};
 	} catch (error) {
-		console.error('Error scraping daily prayer timings:', error);
-		// Return mock data as fallback in case of scraping error
-		const now = new Date();
-		return {
-			location: 'Al Muharraq, Bahrain',
-			date: now.toISOString().split('T')[0],
-			timings: {
-				fajr: '05:03 AM',
-				sunrise: '06:26 AM',
-				dhuhr: '11:44 AM',
-				asr: '02:41 PM',
-				maghrib: '05:01 PM',
-				isha: '06:31 PM'
-			},
-			nextPrayer: {
-				name: 'Fajr',
-				time: '05:03 AM',
-				countdown: '04:15:30' // Format: HH:MM:SS
-			},
-			hijriDate: '17th Rajab, 1447'
-		};
+		console.error('Error fetching prayer timings from Aladhan API:', error);
+		throw error;
 	}
-}
-
-// Helper function to normalize prayer names to standard format
-function normalizePrayerName(name: string): string | null {
-	const lowerName = name.toLowerCase().replace(/\s+/g, '');
-
-	// Map various possible names to standard prayer names
-	if (lowerName.includes('fajr') || lowerName.includes('fagr') || lowerName.includes('subh')) {
-		return 'fajr';
-	} else if (
-		lowerName.includes('sunrise') ||
-		lowerName.includes('sun') ||
-		lowerName.includes('shrook')
-	) {
-		return 'sunrise';
-	} else if (
-		lowerName.includes('dhuhr') ||
-		lowerName.includes('zuhr') ||
-		lowerName.includes('dohr')
-	) {
-		return 'dhuhr';
-	} else if (
-		lowerName.includes('asr') ||
-		lowerName.includes('asr2') ||
-		lowerName.includes('afternoon')
-	) {
-		return 'asr';
-	} else if (
-		lowerName.includes('maghrib') ||
-		lowerName.includes('magrib') ||
-		lowerName.includes('sunset') ||
-		lowerName.includes('evening')
-	) {
-		return 'maghrib';
-	} else if (
-		lowerName.includes('isha') ||
-		lowerName.includes('esha') ||
-		lowerName.includes('night')
-	) {
-		return 'isha';
-	}
-
-	return null; // Return null if not a recognized prayer name
 }
 
 // Helper function to calculate countdown time
@@ -284,7 +235,7 @@ function calculateCountdown(currentMinutes: number, targetMinutes: number): stri
 
 	const hours = Math.floor(diffMinutes / 60);
 	const minutes = diffMinutes % 60;
-	const seconds = 0; // Placeholder, in a real app this would update every second
+	const seconds = 0; // Placeholder, will be calculated on client side
 
 	return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
 		.toString()
@@ -294,25 +245,58 @@ function calculateCountdown(currentMinutes: number, targetMinutes: number): stri
 export const GET: RequestHandler = async () => {
 	try {
 		const now = Date.now();
-		// Check if we have valid cached data (less than 1 day old)
+
+		// Check if we have valid cached data (less than 1 hour old)
 		if (
 			cachedPrayerTimings &&
 			prayerCacheTimestamp &&
 			now - prayerCacheTimestamp < PRAYER_CACHE_DURATION
 		) {
-			console.log('Returning cached prayer timings');
-			return json({ prayerTimings: cachedPrayerTimings });
+			console.log('Returning cached prayer timings (age:', Math.floor((now - prayerCacheTimestamp) / 1000 / 60), 'minutes)');
+			return json({
+				prayerTimings: cachedPrayerTimings,
+				cached: true,
+				cacheAge: Math.floor((now - prayerCacheTimestamp) / 1000 / 60)
+			});
 		}
 
 		// Fetch new data
-		console.log('Fetching fresh prayer timings');
-		const prayerTimings = await scrapeDailyPrayerTimings();
+		console.log('Fetching fresh prayer timings from Aladhan API');
+		const prayerTimings = await fetchPrayerTimings();
+
+		// Update cache
 		cachedPrayerTimings = prayerTimings;
 		prayerCacheTimestamp = now;
 
-		return json({ prayerTimings });
+		console.log('Successfully fetched prayer timings:', {
+			location: prayerTimings.location,
+			date: prayerTimings.date,
+			nextPrayer: prayerTimings.nextPrayer?.name
+		});
+
+		return json({
+			prayerTimings,
+			cached: false
+		});
 	} catch (error) {
 		console.error('Error in prayer timings API:', error);
-		return json({ error: 'Failed to fetch prayer timings' }, { status: 500 });
+
+		// If we have cached data, return it even if expired
+		if (cachedPrayerTimings) {
+			console.warn('Returning expired cached data due to API error');
+			return json({
+				prayerTimings: cachedPrayerTimings,
+				cached: true,
+				error: 'Using cached data due to API error'
+			});
+		}
+
+		return json(
+			{
+				error: 'Failed to fetch prayer timings',
+				message: error instanceof Error ? error.message : 'Unknown error'
+			},
+			{ status: 500 }
+		);
 	}
 };
