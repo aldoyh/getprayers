@@ -151,8 +151,8 @@
 	});
 </script>
 
-<div class="glass-card p-8 islamic-pattern">
-	<div class="flex items-center justify-between mb-8">
+<div class="glass-card p-5 md:p-8 islamic-pattern">
+	<div class="flex items-center justify-between mb-4 md:mb-8">
 		<h2 class="text-3xl font-bold text-[#d4af37] flex items-center gap-3">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +182,7 @@
 		<!-- Closest Day Hero Card -->
 		{#if closestDay}
 			<div
-				class="relative mb-8 overflow-hidden rounded-2xl"
+				class="relative mb-4 md:mb-8 overflow-hidden rounded-2xl"
 				in:scale={{ duration: 500, easing: quintOut }}
 			>
 				<div
@@ -190,7 +190,7 @@
 				/>
 				<div class="absolute inset-0 islamic-pattern opacity-50" />
 
-				<div class="relative glass-card-gold p-8 border-2 border-[#d4af37]">
+				<div class="relative glass-card-gold p-5 md:p-8 border-2 border-[#d4af37]">
 					<div class="flex flex-col md:flex-row items-center justify-between gap-6">
 						<div class="text-center md:text-right">
 							<div class="flex items-center justify-center md:justify-start gap-2 mb-2">
@@ -201,7 +201,9 @@
 									{closestDay.typeAr}
 								</span>
 							</div>
-							<h3 class="text-3xl md:text-4xl font-bold text-[#d4af37] mb-3 text-glow-gold">
+							<h3
+								class="text-2xl md:text-3xl md:text-4xl font-bold text-[#d4af37] mb-3 text-glow-gold"
+							>
 								{closestDay.nameAr}
 							</h3>
 							<p class="text-[#a0a0b0] text-lg max-w-xl">
@@ -213,10 +215,10 @@
 						<div class="text-center" dir="ltr">
 							<div class="relative">
 								<div
-									class="w-32 h-32 rounded-full border-4 border-[#d4af37] flex items-center justify-center bg-[#d4af37]/10"
+									class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-[#d4af37] flex items-center justify-center bg-[#d4af37]/10"
 								>
 									<div class="text-center">
-										<span class="text-5xl font-bold text-[#d4af37] countdown-display">
+										<span class="text-4xl md:text-5xl font-bold text-[#d4af37] countdown-display">
 											{closestDay.daysRemaining}
 										</span>
 										<p class="text-[#a0a0b0] text-sm">يوم</p>

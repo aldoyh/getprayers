@@ -162,8 +162,8 @@
 	});
 </script>
 
-<div class="glass-card p-8 islamic-pattern">
-	<div class="flex items-center justify-between mb-8">
+<div class="glass-card p-5 md:p-8 islamic-pattern">
+	<div class="flex items-center justify-between mb-4 md:mb-8">
 		<h2 class="text-3xl font-bold text-[#d4af37] flex items-center gap-3">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -199,33 +199,35 @@
 		<!-- Next Prayer Countdown Hero -->
 		{#if nextPrayer}
 			<div
-				class="glass-card-gold p-8 rounded-2xl mb-8 text-center relative overflow-hidden"
+				class="glass-card-gold p-5 md:p-8 rounded-2xl mb-6 md:mb-8 text-center relative overflow-hidden"
 				in:fade={{ duration: 500 }}
 			>
 				<div class="absolute inset-0 bg-gradient-to-l from-[#d4af37]/10 to-transparent" />
 				<div class="relative z-10">
 					<p class="text-[#a0a0b0] text-lg mb-2">الصلاة القادمة</p>
-					<h3 class="text-4xl font-bold text-[#d4af37] mb-4 text-glow-gold">{nextPrayer.nameAr}</h3>
+					<h3 class="text-3xl md:text-4xl font-bold text-[#d4af37] mb-4 text-glow-gold">
+						{nextPrayer.nameAr}
+					</h3>
 					<p class="text-[#f0f0f5] text-xl mb-6">{formatTimeAr(nextPrayer.time)}</p>
 
 					<!-- Countdown Timer -->
 					<div class="flex justify-center items-center gap-4" dir="ltr">
 						<div class="flex flex-col items-center">
-							<span class="text-5xl font-bold text-[#d4af37] countdown-display">
+							<span class="text-3xl md:text-5xl font-bold text-[#d4af37] countdown-display">
 								{String(countdown.hours).padStart(2, '0')}
 							</span>
 							<span class="text-[#6a6a7a] text-sm mt-1">ساعة</span>
 						</div>
 						<span class="text-3xl text-[#d4af37] font-bold">:</span>
 						<div class="flex flex-col items-center">
-							<span class="text-5xl font-bold text-[#d4af37] countdown-display">
+							<span class="text-3xl md:text-5xl font-bold text-[#d4af37] countdown-display">
 								{String(countdown.minutes).padStart(2, '0')}
 							</span>
 							<span class="text-[#6a6a7a] text-sm mt-1">دقيقة</span>
 						</div>
 						<span class="text-3xl text-[#d4af37] font-bold">:</span>
 						<div class="flex flex-col items-center">
-							<span class="text-5xl font-bold text-[#d4af37] countdown-display">
+							<span class="text-3xl md:text-5xl font-bold text-[#d4af37] countdown-display">
 								{String(countdown.seconds).padStart(2, '0')}
 							</span>
 							<span class="text-[#6a6a7a] text-sm mt-1">ثانية</span>

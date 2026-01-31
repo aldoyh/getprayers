@@ -42,10 +42,10 @@
 		<div class="relative min-h-screen">
 			<Header on:openGuestbook={openGuestbook} />
 
-			<main class="pt-24 pb-8 px-4 md:px-6 lg:px-8">
-				<div class="max-w-6xl mx-auto space-y-16">
+			<main class="pt-20 pb-8 px-4 md:px-6 md:pt-24 lg:px-8">
+				<div class="max-w-6xl mx-auto space-y-8 md:space-y-16">
 					<!-- Hero Section -->
-					<section id="home" class="min-h-[60vh] flex items-center justify-center py-12">
+					<section id="home" class="flex items-center justify-center py-6 md:min-h-[60vh] md:py-12">
 						<Home on:openGuestbook={openGuestbook} />
 					</section>
 

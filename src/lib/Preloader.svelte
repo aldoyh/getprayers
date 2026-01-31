@@ -6,9 +6,9 @@
 	export let loading = true;
 
 	const dispatch = createEventDispatcher();
-	let container;
-	let logo;
-	let particlesContainer;
+	let container: HTMLDivElement;
+	let logo: HTMLImageElement;
+	let particlesContainer: HTMLDivElement;
 
 	const colors = [
 		'#d4af37', // Gold
@@ -18,8 +18,8 @@
 		'#ffffff' // White
 	];
 
-	let particles = [];
-	let tickerFunc;
+	let particles: any[] = [];
+	let tickerFunc: () => void;
 
 	onMount(() => {
 		if (!loading) return;
@@ -74,7 +74,7 @@
 				particle.opacity -= 0.008;
 
 				particle.el.style.transform = `translate(${particle.x}px, ${particle.y}px)`;
-				particle.el.style.opacity = particle.opacity;
+				particle.el.style.opacity = String(particle.opacity);
 
 				if (particle.opacity <= 0) {
 					particle.el.remove();
