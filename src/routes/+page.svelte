@@ -15,32 +15,29 @@
 	let isGuestbookOpen = false;
 
 	onMount(() => {
-		// Simulate loading time for smooth preloader experience
-		const timer = setTimeout(() => {
-			isLoading = false;
-		}, 2000);
-
-		return () => clearTimeout(timer);
+		// Logic handles by Preloader component
 	});
+
+	function handlePreloaderComplete() {
+		isLoading = false;
+	}
 
 	function openGuestbook() {
 		isGuestbookOpen = true;
 	}
 </script>
 
+<!-- Background - Always visible behind everything -->
+<div class="fixed inset-0 islamic-bg">
+	<div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0f]/50 to-[#0a0a0f]" />
+</div>
+
 <!-- Preloader -->
-<Preloader loading={isLoading} />
+<Preloader loading={isLoading} on:complete={handlePreloaderComplete} />
 
 <!-- Main Content -->
 {#if !isLoading}
 	<div in:fade={{ duration: 800, delay: 300, easing: quintOut }}>
-		<!-- Background -->
-		<div class="fixed inset-0 islamic-bg">
-			<div
-				class="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0f]/50 to-[#0a0a0f]"
-			/>
-		</div>
-
 		<!-- Main Container -->
 		<div class="relative min-h-screen">
 			<Header on:openGuestbook={openGuestbook} />
