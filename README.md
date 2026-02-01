@@ -15,7 +15,7 @@
 
 # تطبيق الصلاة الإسلامي
 
-
+![App Screenshot](./localhost_5176_.jpeg)
 
 تطبيق إسلامي شامل لمواقيت الصلاة والأيام الإسلامية المباركة مع واجهة مستخدم متجاوبة باللغة العربية.
 
@@ -54,8 +54,8 @@ All code has been tested and verified:
 
 | Device | Screenshot |
 |--------|------------|
-| Desktop | ![Desktop Mode](./screenshots/desktop-mode.png) |
-| Mobile | ![Mobile Mode](./screenshots/mobile-mode.png) |
+| Desktop | ![Desktop Mode](./localhost_5176_.jpeg) |
+| Mobile | ![Mobile Mode](./localhost_5176_ (1).jpeg) |
 
 ---
 
